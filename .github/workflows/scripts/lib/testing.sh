@@ -67,7 +67,7 @@ function service_ip {
 	local cid
 	cid="$(container_id "$svc")"
 
-	ip="$(docker container inspect "$cid" --format '{{ (index .NetworkSettings.Networks "docker-storm_storm").IPAddress }}')"
+	ip="$(docker container inspect "$cid" --format '{{ (index .NetworkSettings.Networks "docker-storm-elasticserach-kibana_storm").IPAddress }}')"
 	if [ -z "${ip:-}" ]; then
 		err "Container ${cid} has no IP address"
 		return 1
