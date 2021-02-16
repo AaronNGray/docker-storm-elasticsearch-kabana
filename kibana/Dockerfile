@@ -1,7 +1,7 @@
-ARG ELK_VERSION
+ARG STORM_VERSION
 
 # https://www.docker.elastic.co/
-FROM docker.elastic.co/kibana/kibana:${ELK_VERSION}
+FROM docker.elastic.co/kibana/kibana:${STORM_VERSION}
 
 # Add your kibana plugins setup here
 # Example: RUN kibana-plugin install <name|url>

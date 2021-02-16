@@ -1,3 +1,3 @@
-ARG ELK_VERSION
+ARG STORM_VERSION
 
-FROM docker.elastic.co/apm/apm-server:${ELK_VERSION}
+FROM docker.elastic.co/apm/apm-server:${STORM_VERSION}

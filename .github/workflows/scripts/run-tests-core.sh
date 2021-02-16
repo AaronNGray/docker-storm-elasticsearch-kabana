@@ -29,7 +29,7 @@ source .env
 curl -X POST -D- "http://${ip_kb}:5601/api/saved_objects/index-pattern" \
 	-s -w '\n' \
 	-H 'Content-Type: application/json' \
-	-H "kbn-version: ${ELK_VERSION}" \
+	-H "kbn-version: ${STORM_VERSION}" \
 	-u elastic:testpasswd \
 	-d '{"attributes":{"title":"logstash-*","timeFieldName":"@timestamp"}}'
 
@@ -43,14 +43,14 @@ if [[ $count -ne 1 ]]; then
 fi
 
 log 'Sending message to Logstash TCP input'
-echo 'dockerelk' | nc -q0 "$ip_ls" 5000
+echo 'dockerstorm' | nc -q0 "$ip_ls" 5000
 
 sleep 1
 curl -X POST "http://${ip_es}:9200/_refresh" -u elastic:testpasswd \
 	-s -w '\n'
 
 log 'Searching message in Elasticsearch'
-response="$(curl "http://${ip_es}:9200/_count?q=message:dockerelk&pretty" -s -u elastic:testpasswd)"
+response="$(curl "http://${ip_es}:9200/_count?q=message:dockerstorm&pretty" -s -u elastic:testpasswd)"
 echo "$response"
 count="$(jq -rn --argjson data "${response}" '$data.count')"
 if [[ $count -ne 1 ]]; then

@@ -2,6 +2,64 @@ version: '3.3'
 
 services:
 
+  zookeeper:
+    image: zookeeper
+    container_name: zookeeper
+    restart: always
+    ports:
+      - 2181:2181
+    networks:
+      - storm
+
+  nimbus:
+    image: storm:1.2.3
+    container_name: nimbus
+    command: storm nimbus
+    depends_on:
+      - zookeeper
+    links:
+      - zookeeper
+    restart: always
+    ports:
+      - 6627:6627
+      - 3772:3772
+      - 3773:3773
+      - 3774:3774
+    networks:
+      - storm
+
+  supervisor:
+    image: storm:1.2.3
+    container_name: supervisor
+    command: storm supervisor
+    depends_on:
+      - nimbus
+      - zookeeper
+    links:
+      - nimbus
+      - zookeeper
+    networks:
+      - storm
+    restart: always
+
+  ui:
+    image: storm:1.2.3
+    container_name: ui
+    command: storm ui
+    depends_on:
+      - nimbus
+      - zookeeper
+      - supervisor
+    links:
+      - nimbus
+      - zookeeper
+      - supervisor
+    ports:
+      - 8080:8080
+    networks:
+      - storm
+    restart: always
+
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.11.0
     ports:
@@ -12,14 +70,14 @@ services:
         target: /usr/share/elasticsearch/config/elasticsearch.yml
     environment:
       ES_JAVA_OPTS: "-Xmx256m -Xms256m"
-      ELASTIC_PASSWORD: changeme
+      ELASTIC_PASSWORD: $ELASTIC_PASSWORD
       # Use single node discovery in order to disable production mode and avoid bootstrap checks.
       # see: https://www.elastic.co/guide/en/elasticsearch/reference/current/bootstrap-checks.html
       discovery.type: single-node
-      # Force publishing on the 'elk' overlay.
+      # Force publishing on the 'storm' overlay.
       network.publish_host: _eth0_
     networks:
-      - elk
+      - storm
     deploy:
       mode: replicated
       replicas: 1
@@ -38,7 +96,7 @@ services:
     environment:
       LS_JAVA_OPTS: "-Xmx256m -Xms256m"
     networks:
-      - elk
+      - storm
     deploy:
       mode: replicated
       replicas: 1
@@ -51,7 +109,7 @@ services:
       - source: kibana_config
         target: /usr/share/kibana/config/kibana.yml
     networks:
-      - elk
+      - storm
     deploy:
       mode: replicated
       replicas: 1
@@ -68,5 +126,5 @@ configs:
     file: ./kibana/config/kibana.yml
 
 networks:
-  elk:
+  storm:
     driver: overlay

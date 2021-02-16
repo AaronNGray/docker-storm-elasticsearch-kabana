@@ -15,6 +15,6 @@ services:
         target: /usr/share/curator/config/delete_log_files_curator.yml
         read_only: true
     networks:
-      - elk
+      - storm
     depends_on:
       - elasticsearch

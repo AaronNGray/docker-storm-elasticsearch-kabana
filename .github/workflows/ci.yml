@@ -253,8 +253,8 @@ jobs:
 
           # Run Elasticsearch and wait for its availability
 
-          docker stack deploy -c ./docker-stack.yml elk
-          docker service scale elk_logstash=0 elk_kibana=0
+          docker stack deploy -c ./docker-stack.yml storm
+          docker service scale storm_logstash=0 storm_kibana=0
           source .github/workflows/scripts/lib/testing.sh
           poll_ready "$(container_id elasticsearch)" "http://$(service_ip elasticsearch):9200/" -u 'elastic:changeme'
 
@@ -269,7 +269,7 @@ jobs:
       ##########################################################
 
       - name:  Run the stack
-        run: docker service scale elk_logstash=1 elk_kibana=1
+        run: docker service scale storm_logstash=1 storm_kibana=1
 
       - name: Execute core test suite
         run: .github/workflows/scripts/run-tests-core.sh swarm
@@ -277,10 +277,10 @@ jobs:
       - name: 'debug: Display state and logs (core)'
         if: always()
         run: |
-          docker stack services elk
-          docker service logs elk_elasticsearch
-          docker service logs elk_kibana
-          docker service logs elk_logstash
+          docker stack services storm
+          docker service logs storm_elasticsearch
+          docker service logs storm_kibana
+          docker service logs storm_logstash
 
         ##############
         #            #
@@ -290,4 +290,4 @@ jobs:
 
       - name: Terminate all components
         if: always()
-        run: docker stack rm elk
+        run: docker stack rm storm

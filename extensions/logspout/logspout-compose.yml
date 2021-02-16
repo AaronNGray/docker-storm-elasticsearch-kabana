@@ -8,9 +8,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       ROUTE_URIS: logstash://logstash:5000
-      LOGSTASH_TAGS: docker-elk
+      LOGSTASH_TAGS: docker-storm
     networks:
-      - elk
+      - storm
     depends_on:
       - logstash
     restart: on-failure

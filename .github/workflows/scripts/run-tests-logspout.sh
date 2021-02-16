@@ -23,7 +23,7 @@ poll_ready "$cid_ls" "http://${ip_ls}/health"
 #   2021/01/07 16:14:52 # logspout v3.2.13-custom by gliderlabs
 #
 # which we expect to find by querying:
-#   docker.image:"docker-elk_logspout" AND message:"logspout gliderlabs"~3
+#   docker.image:"docker-storm_logspout" AND message:"logspout gliderlabs"~3
 #
 log 'Searching a log entry forwarded by Logspout'
 
@@ -32,7 +32,7 @@ declare -i count
 
 # retry for max 60s (30*2s)
 for _ in $(seq 1 30); do
-	response="$(curl "http://${ip_es}:9200/_count?q=docker.image:%22docker-elk_logspout%22%20AND%20message:%22logspout%20gliderlabs%22~3&pretty" -s -u elastic:testpasswd)"
+	response="$(curl "http://${ip_es}:9200/_count?q=docker.image:%22docker-storm_logspout%22%20AND%20message:%22logspout%20gliderlabs%22~3&pretty" -s -u elastic:testpasswd)"
 	count="$(jq -rn --argjson data "${response}" '$data.count')"
 	if [[ $count -gt 0 ]]; then
 		break

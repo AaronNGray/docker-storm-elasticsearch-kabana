@@ -16,7 +16,7 @@ function container_id {
 
 	local label
 	if [[ "${MODE:-}" == "swarm" ]]; then
-		label="com.docker.swarm.service.name=elk_${svc}"
+		label="com.docker.swarm.service.name=storm_${svc}"
 	else
 		label="com.docker.compose.service=${svc}"
 	fi
@@ -52,7 +52,7 @@ function service_ip {
 
 	if [[ "${MODE:-}" == "swarm" ]]; then
 		#ingress_net="$(docker network inspect ingress --format '{{ .Id }}')"
-		#ip="$(docker service inspect elk_"$svc" --format "{{ range .Endpoint.VirtualIPs }}{{ if eq .NetworkID \"${ingress_net}\" }}{{ .Addr }}{{ end }}{{ end }}" | cut -d/ -f1)"
+		#ip="$(docker service inspect storm_"$svc" --format "{{ range .Endpoint.VirtualIPs }}{{ if eq .NetworkID \"${ingress_net}\" }}{{ .Addr }}{{ end }}{{ end }}" | cut -d/ -f1)"
 		node="$(docker node ls --format '{{ .ID }}')"
 		ip="$(docker node inspect "$node" --format '{{ .Status.Addr }}')"
 		if [ -z "${ip:-}" ]; then
@@ -67,7 +67,7 @@ function service_ip {
 	local cid
 	cid="$(container_id "$svc")"
 
-	ip="$(docker container inspect "$cid" --format '{{ (index .NetworkSettings.Networks "docker-elk_elk").IPAddress }}')"
+	ip="$(docker container inspect "$cid" --format '{{ (index .NetworkSettings.Networks "docker-storm_storm").IPAddress }}')"
 	if [ -z "${ip:-}" ]; then
 		err "Container ${cid} has no IP address"
 		return 1

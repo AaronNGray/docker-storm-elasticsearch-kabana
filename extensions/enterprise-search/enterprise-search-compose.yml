@@ -5,7 +5,7 @@ services:
     build:
       context: extensions/enterprise-search/
       args:
-        ELK_VERSION: $ELK_VERSION
+        STORM_VERSION: $STORM_VERSION
     volumes:
       - type: bind
         source: ./extensions/enterprise-search/config/enterprise-search.yml
@@ -17,6 +17,6 @@ services:
     ports:
       - '3002:3002'
     networks:
-      - elk
+      - storm
     depends_on:
       - elasticsearch
