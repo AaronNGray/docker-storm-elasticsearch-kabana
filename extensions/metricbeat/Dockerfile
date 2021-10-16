@@ -1,3 +1,3 @@
-ARG STORM_VERSION
+ARG ELASTIC_VERSION
 
-FROM docker.elastic.co/beats/metricbeat:${STORM_VERSION}
+FROM docker.elastic.co/beats/metricbeat:${ELASTIC_VERSION}

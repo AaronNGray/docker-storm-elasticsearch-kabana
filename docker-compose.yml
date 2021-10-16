@@ -11,7 +11,7 @@ services:
       - storm
 
   nimbus:
-    image: storm:1.2.3
+    image: storm:$STORM_VERSION
     container_name: nimbus
     command: storm nimbus
     depends_on:
@@ -28,7 +28,7 @@ services:
       - storm
 
   supervisor:
-    image: storm:1.2.3
+    image: storm:$STORM_VERSION
     container_name: supervisor
     command: storm supervisor
     depends_on:
@@ -42,7 +42,7 @@ services:
     restart: always
 
   ui:
-    image: storm:1.2.3
+    image: storm:$STORM_VERSION
     container_name: ui
     command: storm ui
     depends_on:
@@ -63,6 +63,7 @@ services:
     build:
       context: elasticsearch/
       args:
+        ELASTIC_VERSION: $ELASTIC_VERSION
         STORM_VERSION: $STORM_VERSION
     volumes:
       - type: bind
@@ -83,11 +84,17 @@ services:
       discovery.type: single-node
     networks:
       - storm
+    healthcheck:
+      test: curl -s https://localhost:9200 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   logstash:
     build:
       context: logstash/
       args:
+        ELASTIC_VERSION: $ELASTIC_VERSION
         STORM_VERSION: $STORM_VERSION
     volumes:
       - type: bind
@@ -114,6 +121,7 @@ services:
     build:
       context: kibana/
       args:
+        ELASTIC_VERSION: $ELASTIC_VERSION
         STORM_VERSION: $STORM_VERSION
     volumes:
       - type: bind
@@ -126,6 +134,12 @@ services:
       - storm
     depends_on:
       - elasticsearch
+    healthcheck:
+      test: curl -s https://localhost:5601 >/dev/null; if [[ $$? == 52 ]]; then echo 0; else echo 1; fi
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
 
 networks:
   storm:
